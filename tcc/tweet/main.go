@@ -16,13 +16,9 @@ import (
 var m storage.Storage
 
 func main() {
-	// 	CONSUMER_API_KEY = "CSpU5E2kiJKhoPEIyb58866cp"
-	// CONSUMER_API_SECRET = "FGfnCxPHXUuOuxTOVal9Muc6JRHPnUpjAfqBfSCqCbW67jvZ9n"
-	// ACCESS_TOKEN = "45275399-OfBm7aZRBavMFjr1GdAsHVBEZhCG9UYxIHUrt8gry"
-	// ACCESS_TOKEN_SECRET = "rP1RoTmIyY0LCDmVso8rsh9OrMVrEBTicBSihW3P5fbHA"
 
-	config := oauth1.NewConfig("CSpU5E2kiJKhoPEIyb58866cp", "FGfnCxPHXUuOuxTOVal9Muc6JRHPnUpjAfqBfSCqCbW67jvZ9n")
-	token := oauth1.NewToken("45275399-OfBm7aZRBavMFjr1GdAsHVBEZhCG9UYxIHUrt8gry", "rP1RoTmIyY0LCDmVso8rsh9OrMVrEBTicBSihW3P5fbHA")
+	config := oauth1.NewConfig(os.Getenv("TWITTER_CONSUMER_API_KEY"), os.Getenv("TWITTER_CONSUMER_API_SECRET"))
+	token := oauth1.NewToken(os.Getenv("TWITTER_ACCESS_TOKEN"), os.Getenv("TWITTER_ACCESS_TOKEN_SECRET"))
 	// http.Client will automatically authorize Requests
 	httpClient := config.Client(oauth1.NoContext, token)
 
