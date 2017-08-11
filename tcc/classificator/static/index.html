@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tweet Classificator</title>
+  <script   src="http://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script>
+  <script language="javascript">
+  function getTweet(){
+  		$.get("/tweets/classification", 
+  		function(data){
+	  		if ("_id" in data){
+				$("#tweet").html(data['text']);
+				$("#tweetId").val(data['_id']);
+				$("#statistics").html(data['totalTweetsClassified']+" tweets classificados. Total: "+data['totalTweets'])
+				$("#buttons").show();
+				$("#statistics").show();
+			}else{
+				$("#buttons").hide();
+				$("#statistics").hide();
+				$("#tweetId").val("");
+				$("#tweet").html("Todos os tweets foram classificados. Obrigado! :)");
+			}
+  	})
+  }
+
+  function classifyTweet(txt){
+  	id=$("#tweetId").val();
+  	if (id!="" && txt!=""){
+  		data={"classification": txt}
+  		$.ajax({
+		  		url: "/tweets/"+id, 
+		  		type: "PUT", 
+		  		dataType: "json",
+		  		headers:{"Content-Type": "application/json"},
+		  		data: JSON.stringify(data), 
+		  		success: function(result){
+   							getTweet();
+						 }
+				}
+				);
+  	}else{
+  		alert(id+ " "+txt )
+  	}
+  }
+  </script>
+
+  <style>
+  .right{
+  	width: 50%;
+  	float:right;
+  }
+  .left{
+  	width: 50%;
+  	float:left;
+
+  }
+  #buttons{
+  	width: 100%;
+  	margin: 0 auto 0 auto;
+  	text-align: center;
+  }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body onload="getTweet();">
+<div id="container">
+<input type="hidden" id="tweetId"/>
+  <div id="tweet"></div>
+  <div id="buttons"><div class="left"><img id="neg" width="64px" height="64px" src="negative.png" alt="negative" onclick='classifyTweet("NEGATIVE");' /></div> <div class="right">  <img id="pos" width="64px" height="64px" src="positive.png" alt="positive" onclick='classifyTweet("POSITIVE");' /></div></div>
+
+  <span id="statistics" class="footer"></span>
+</div>
+</body>
+</html>

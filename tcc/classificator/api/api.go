@@ -21,6 +21,7 @@ func (self *api) StartServer() {
 	router := httprouter.New()
 	router.GET("/tweets/classification", self.getTweetsToClassification)
 	router.PUT("/tweets/:id", self.setTweetClassification)
+	router.ServeFiles("/static/*filepath", http.Dir("./static/"))
 	fmt.Println("Listening localhost:80...")
 	log.Fatal(http.ListenAndServe(":80", router))
 }
@@ -32,6 +33,11 @@ func (self *api) getTweetsToClassification(w http.ResponseWriter, r *http.Reques
 		self.send(w, http.StatusNoContent, nil)
 		return
 	}
+
+	classified, _ := self.storage.GetCountClassification()
+	total, _ := self.storage.GetCountTweets()
+	tweet["totalTweets"] = total
+	tweet["totalTweetsClassified"] = classified
 	self.send(w, http.StatusOK, tweet)
 	return
 }
@@ -69,6 +75,7 @@ func (self *api) setTweetClassification(w http.ResponseWriter, r *http.Request, 
 			return
 		}
 	}
+	fmt.Println(configJson)
 	if configJson["classification"] == nil {
 		fmt.Println("Error record without classification")
 		self.send(w, http.StatusBadRequest, nil)
