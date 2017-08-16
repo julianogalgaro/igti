@@ -36,8 +36,10 @@ func (self *api) getTweetsToClassification(w http.ResponseWriter, r *http.Reques
 
 	classified, _ := self.storage.GetCountClassification()
 	total, _ := self.storage.GetCountTweets()
+	predict, _ := self.storage.GetCountClassificationPredict()
 	tweet["totalTweets"] = total
 	tweet["totalTweetsClassified"] = classified
+	tweet["totalTweetsPredictClassified"] = predict
 	self.send(w, http.StatusOK, tweet)
 	return
 }

@@ -6,21 +6,21 @@
   <script   src="http://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script>
   <script language="javascript">
   function getTweet(){
-  		$.get("/tweets/classification", 
-  		function(data){
-	  		if ("_id" in data){
+		$.get("/tweets/classification", 
+		function(data){
+  		if ("_id" in data){
 				$("#tweet").html(data['text']);
 				$("#tweetId").val(data['_id']);
-				$("#statistics").html(data['totalTweetsClassified']+" tweets classificados. Total: "+data['totalTweets'])
+				$("#statistics").html(data['totalTweetsClassified']+" tweets classificados por pessoas<br>"+data['totalTweetsPredictClassified']+" tweets classificados automaticamente<br>"+data['totalTweets']+ " tweets coletados")
 				$("#buttons").show();
 				$("#statistics").show();
-			}else{
+		  }else{
 				$("#buttons").hide();
 				$("#statistics").hide();
 				$("#tweetId").val("");
 				$("#tweet").html("Todos os tweets foram classificados. Obrigado! :)");
-			}
-  	})
+		  }
+	  })
   }
 
   function classifyTweet(txt){
