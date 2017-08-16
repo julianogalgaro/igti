@@ -1,0 +1,23 @@
+version: '2'
+services:
+  elasticsearch:
+    hostname: elastic
+    domainname: elk-local
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+    ports:
+      - "9200"
+      - "9300"
+    environment:
+      - ES_HEAP_SIZE=1G
+    volumes:
+      - $PWD/elasticsearch.yml:/usr/share/elasticsearch/config
+      - /data/elasticsearch/:/data
+  kibana:
+    hostname: kibana
+    domainname: elk-local
+    image: kibana
+    ports:
+      - "8080:5601"
+volumes:
+  data:
+    driver: local
