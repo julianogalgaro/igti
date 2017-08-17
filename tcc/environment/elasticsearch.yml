@@ -5,11 +5,7 @@ discovery:
     minimum_master_nodes: 1
     ping:
       unicast:
-        hosts: [ 'elasticsearch' ]
-path:
-  logs: /var/log/elasticsearch
-network:
-  host: ['0.0.0.0']
+        hosts: [ 'localhost' ]
 node:
   data: true
   master: true

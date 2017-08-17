@@ -1,23 +1,33 @@
 version: '2'
 services:
   elasticsearch:
-    hostname: elastic
+    hostname: elasticsearch
     domainname: elk-local
     image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
     ports:
-      - "9200"
-      - "9300"
+      - 9200:9200
+    network_mode: "host"
     environment:
-      - ES_HEAP_SIZE=1G
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
     volumes:
-      - $PWD/elasticsearch.yml:/usr/share/elasticsearch/config
-      - /data/elasticsearch/:/data
+      - $PWD/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - /data/elasticsearch:/data
   kibana:
     hostname: kibana
     domainname: elk-local
     image: docker.elastic.co/kibana/kibana:5.5.1
     ports:
       - "8080:5601"
+    network_mode: "host"
+    environment:
+      - ELASTICSEARCH_URL="http://localhost:9200"
 volumes:
   data:
     driver: local
+
