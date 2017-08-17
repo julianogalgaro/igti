@@ -15,7 +15,7 @@ services:
   kibana:
     hostname: kibana
     domainname: elk-local
-    image: kibana
+    image: docker.elastic.co/kibana/kibana:5.5.1
     ports:
       - "8080:5601"
 volumes:
