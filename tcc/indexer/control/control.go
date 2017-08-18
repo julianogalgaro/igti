@@ -16,6 +16,7 @@ import (
 type control struct {
 	storage          storage.Storage
 	elasticSearchUrl string
+	fieldsToIndexing []string
 }
 
 var sleepTimeSecondError = time.Duration(10)
@@ -44,7 +45,7 @@ func (self *control) indexing() error {
 	}
 
 	for _, tweet := range tweets {
-		treatTweetToIndexing(tweet)
+		self.treatTweetToIndexing(tweet)
 
 		tweetJson, err := json.Marshal(tweet)
 		if err != nil {
@@ -62,15 +63,11 @@ func (self *control) indexing() error {
 
 }
 
-func treatTweetToIndexing(t map[string]interface{}) {
-	fieldsToIndexing := []string{"idstr", "lang", "retweetcount", "retweeted", "createdat",
-		"coordinates", "text", "classificationDate", "classificationPredictDate",
-		"classificationPredict", "classificationPredictRate", "user", "entities"}
-	sort.Strings(fieldsToIndexing)
+func (self *control) treatTweetToIndexing(t map[string]interface{}) {
 
 	for k, _ := range t {
-		i := sort.SearchStrings(fieldsToIndexing, k)
-		if i < len(fieldsToIndexing) && fieldsToIndexing[i] == k {
+		i := sort.SearchStrings(self.fieldsToIndexing, k)
+		if i < len(self.fieldsToIndexing) && self.fieldsToIndexing[i] == k {
 			continue
 		} else {
 			delete(t, k)
@@ -106,9 +103,16 @@ func (self *control) sendDataToElastic(data []byte, indexName, typeIndex, id str
 func NewControl() *control {
 	elasticUrl := "http://localhost:9200/"
 	s := storage.NewMongo()
+
+	fieldsToIndexing := []string{"idstr", "lang", "retweetcount", "retweeted", "createdat",
+		"coordinates", "text", "classificationDate", "classificationPredictDate",
+		"classificationPredict", "classificationPredictRate", "user", "entities"}
+	sort.Strings(fieldsToIndexing)
+
 	self := control{
 		storage:          s,
 		elasticSearchUrl: elasticUrl,
+		fieldsToIndexing: fieldsToIndexing,
 	}
 	return &self
 }
