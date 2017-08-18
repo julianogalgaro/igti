@@ -15,6 +15,7 @@ import (
 
 type api struct {
 	storage storage.Storage
+	port    string
 }
 
 func (self *api) StartServer() {
@@ -22,8 +23,8 @@ func (self *api) StartServer() {
 	router.GET("/tweets/classification", self.getTweetsToClassification)
 	router.PUT("/tweets/:id", self.setTweetClassification)
 	router.ServeFiles("/static/*filepath", http.Dir("./static/"))
-	fmt.Println("Listening localhost:80...")
-	log.Fatal(http.ListenAndServe(":80", router))
+	fmt.Printf("Listening localhost:%s...\n", self.port)
+	log.Fatal(http.ListenAndServe(":"+self.port, router))
 }
 
 func (self *api) getTweetsToClassification(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -89,10 +90,11 @@ func (self *api) setTweetClassification(w http.ResponseWriter, r *http.Request, 
 
 }
 
-func NewApi() *api {
+func NewApi(port string) *api {
 	m := storage.NewMongo()
 	self := api{
 		storage: m,
+		port:    port,
 	}
 	return &self
 }

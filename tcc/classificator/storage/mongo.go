@@ -32,7 +32,7 @@ func (self *Mongo) getConnection() *mgo.Session {
 }
 
 func (self *Mongo) getClassificationDate(minute int) int64 {
-	return time.Now().Add(time.Duration(minute)*time.Minute).UnixNano() / int64(time.Second)
+	return time.Now().Add(time.Duration(minute) * time.Minute).UnixNano()
 }
 
 func (self *Mongo) GetTweetWithoutClassification(t map[string]interface{}) error {
@@ -114,7 +114,11 @@ func (self *Mongo) SetTweetClassificationPredict(id bson.ObjectId, classificatio
 
 	c := sessionCopy.DB("repositorio").C("tweet")
 
-	change := bson.M{"$set": bson.M{"classificationPredict": classification, "classificationPredictRate": rate}}
+	change := bson.M{"$set": bson.M{
+		"classificationPredict":     classification,
+		"classificationPredictRate": rate,
+		"classificationPredictDate": self.getClassificationDate(0),
+	}}
 	err := c.Update(bson.M{"_id": id, "classificationPredict": bson.M{"$exists": 0}}, change)
 	if err != nil {
 		fmt.Println("ERROR on predict TWEET [" + id.Hex() + "] as [" + classification + "]")

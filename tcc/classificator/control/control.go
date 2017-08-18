@@ -18,14 +18,14 @@ type control struct {
 	storage          storage.Storage
 }
 
-var sleepTimeSecond = time.Duration(10)
+var sleepTimeSecond = time.Duration(60)
 
 func (self *control) StartPredict() {
 
 	for {
 		err := self.predict()
 		if err != nil {
-			fmt.Println("Error on predict", err)
+			fmt.Printf("Sleeping [%d] seconds...\n", sleepTimeSecond)
 			time.Sleep(sleepTimeSecond * time.Second)
 		}
 	}
@@ -39,7 +39,6 @@ func (self *control) predict() error {
 		return err
 	}
 	tweetJson, err := json.Marshal(tweet)
-	fmt.Println("JSON: ", tweet["text"].(string))
 	if err != nil {
 		fmt.Println("Error on marshal:", err)
 		return err

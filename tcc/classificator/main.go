@@ -9,6 +9,6 @@ func main() {
 
 	go control.NewControl("http://localhost:8081/").StartPredict()
 
-	api.NewApi().StartServer()
+	api.NewApi("80").StartServer()
 
 }
