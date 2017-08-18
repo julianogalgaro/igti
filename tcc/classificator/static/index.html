@@ -11,13 +11,19 @@
   		if ("_id" in data){
 				$("#tweet").html(data['text']);
 				$("#tweetId").val(data['_id']);
-				$("#statistics").html(data['totalTweetsClassified']+" tweets classificados por pessoas<br>"+data['totalTweetsPredictClassified']+" tweets classificados automaticamente<br>"+data['totalTweets']+ " tweets coletados")
+        if (data['classificationPredict']!=null){
+          $("#tweetPredicted").html("Este tweet foi classificado automaticamente como: "+data['classificationPredict']);
+        }else{
+          $("#tweetPredicted").html("");
+        }
+				$("#statistics").html(data['totalTweetsClassified']+" tweets classificados por pessoas<br>"+data['totalTweetsPredictClassified']+" tweets classificados automaticamente<br>"+data['totalTweets']+ " tweets coletados");
 				$("#buttons").show();
 				$("#statistics").show();
 		  }else{
 				$("#buttons").hide();
 				$("#statistics").hide();
 				$("#tweetId").val("");
+        $("#tweetPredicted").html("");
 				$("#tweet").html("Todos os tweets foram classificados. Obrigado! :)");
 		  }
 	  })
@@ -67,9 +73,10 @@
 <body>
 <div id="container">
 <input type="hidden" id="tweetId"/>
-  <div id="tweet"></div>
+  <div>Classifique os tweets como NEGATIVO ou POSITIVO e ajude no treinamento da rede neural para processamento automático :) </div><br/>
+  <div>Texto do tweet: <span id="tweet"></span></div>
   <div id="buttons"><div class="left"><img id="neg" width="64px" height="64px" src="negative.png" alt="negative" onclick='classifyTweet("NEGATIVE");' /></div> <div class="right">  <img id="pos" width="64px" height="64px" src="positive.png" alt="positive" onclick='classifyTweet("POSITIVE");' /></div></div>
-
+  <div id="tweetPredicted"></div><br/>
   <span id="statistics" class="footer"></span>
 </div>
 </body>

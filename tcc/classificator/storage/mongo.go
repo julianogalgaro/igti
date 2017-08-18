@@ -53,7 +53,7 @@ func (self *Mongo) GetTweetWithoutClassification(t map[string]interface{}) error
 			bson.M{"classificationDate": bson.M{"$exists": 0}},
 			bson.M{"classificationDate": bson.M{"$lt": self.getClassificationDate(-5)}},
 		},
-	}).Select(bson.M{"text": 1, "_id": 1}).Limit(1).Apply(change, &t)
+	}).Select(bson.M{"text": 1, "classificationPredict": 1, "_id": 1}).Limit(1).Apply(change, &t)
 
 	if err != nil && err != mgo.ErrNotFound {
 		fmt.Println("Error: " + err.Error())
