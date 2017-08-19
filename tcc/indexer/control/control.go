@@ -53,18 +53,17 @@ func (self *control) indexing() error {
 			return err
 		}
 
-		err = self.sendDataToElastic(tweetJson, "sentiment", "tweet", tweet["idstr"].(string))
+		err = self.sendDataToElastic(tweetJson, "test6", "tweet", tweet["idstr"].(string))
 		if err != nil {
 			return err
 		}
 		self.storage.SetLastProcessingDate("tweet", tweet["classificationPredictDate"].(int64))
 	}
-	return nil
 
+	return nil
 }
 
 func (self *control) treatTweetToIndexing(t map[string]interface{}) {
-
 	for k, _ := range t {
 		i := sort.SearchStrings(self.fieldsToIndexing, k)
 		if i < len(self.fieldsToIndexing) && self.fieldsToIndexing[i] == k {
@@ -73,10 +72,27 @@ func (self *control) treatTweetToIndexing(t map[string]interface{}) {
 			delete(t, k)
 		}
 	}
+
+	t["classificationDateStr"] = unixNanoToStringDate(t["classificationDate"], "2006-01-02 15:04:05")
+	t["classificationPredictDateStr"] = unixNanoToStringDate(t["classificationPredictDate"], "2006-01-02 15:04:05")
+
+	if t["classificationDateStr"].(string) == "" {
+		delete(t, "classificationDateStr")
+	}
+}
+
+func unixNanoToStringDate(u interface{}, format string) string {
+	if u != nil {
+		i := u.(int64)
+		if i < 16000000000 {
+			i = i * 1000000000
+		}
+		return time.Unix(0, i).Format(format)
+	}
+	return ""
 }
 
 func (self *control) sendDataToElastic(data []byte, indexName, typeIndex, id string) error {
-
 	url := self.elasticSearchUrl + indexName + "/" + typeIndex + "/" + id
 
 	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(data))
@@ -92,12 +108,12 @@ func (self *control) sendDataToElastic(data []byte, indexName, typeIndex, id str
 	body, _ := ioutil.ReadAll(resp.Body)
 	result := make(map[string]interface{}, 0)
 	json.Unmarshal(body, &result)
+
 	if result["result"] != nil && (result["result"].(string) == "created" || result["result"].(string) == "updated") {
 		return nil
 	} else {
-		return errors.New("Indexing error" + string(body))
+		return errors.New("Indexing error" + string(body) + " json: " + string(data))
 	}
-
 }
 
 func NewControl() *control {
@@ -105,7 +121,7 @@ func NewControl() *control {
 	s := storage.NewMongo()
 
 	fieldsToIndexing := []string{"idstr", "lang", "retweetcount", "retweeted", "createdat",
-		"coordinates", "text", "classificationDate", "classificationPredictDate",
+		"coordinates", "text", "classification", "classificationDate", "classificationPredictDate",
 		"classificationPredict", "classificationPredictRate", "user", "entities"}
 	sort.Strings(fieldsToIndexing)
 
