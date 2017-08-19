@@ -68,7 +68,6 @@ func GetIndexMapping(indexName string) ([]byte, error) {
 								            "entities": {
 								                "properties": {
 								                    "hashtags": {
-								                        "type": "nested",
 								                        "properties": {
 								                            "text": {
 								                                "type": "string",
@@ -82,7 +81,6 @@ func GetIndexMapping(indexName string) ([]byte, error) {
 								                        }
 								                    },
 								                    "urls": {
-								                        "type": "nested",
 								                        "properties": {
 								                            "display_url": {
 								                                "type": "string"
@@ -97,7 +95,6 @@ func GetIndexMapping(indexName string) ([]byte, error) {
 								                        }
 								                    },
 								                    "usermentions": {
-								                        "type": "nested",
 								                        "properties": {
 								                            "indices": {
 								                                "type": "long"
