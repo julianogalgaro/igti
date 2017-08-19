@@ -71,7 +71,13 @@ func GetIndexMapping(indexName string) ([]byte, error) {
 								                        "type": "nested",
 								                        "properties": {
 								                            "text": {
-								                                "type": "string"
+								                                "type": "string",
+								                                "fields":{
+								                                    "raw":{
+								                                        "type": "string",
+								                                        "index": "not_analyzed"
+								                                    }
+								                                }
 								                            }
 								                        }
 								                    },
@@ -97,7 +103,13 @@ func GetIndexMapping(indexName string) ([]byte, error) {
 								                                "type": "long"
 								                            },
 								                            "screenname": {
-								                                "type": "string"
+								                                "type": "string",
+								                                "fields":{
+								                                    "raw":{
+								                                        "type": "string",
+								                                        "index": "not_analyzed"
+								                                    }
+								                                }
 								                            },
 								                            "name": {
 								                                "type": "string"
@@ -179,7 +191,13 @@ func GetIndexMapping(indexName string) ([]byte, error) {
 								                        "type": "string"
 								                    },
 								                    "screenname": {
-								                        "type": "string"
+								                        "type": "string",
+								                        "fields":{
+						                                    "raw":{
+						                                        "type": "string",
+						                                        "index": "not_analyzed"
+						                                    }
+						                                }
 								                    },
 								                    "statusescount": {
 								                        "type": "long"
