@@ -24,7 +24,7 @@ type control struct {
 
 var (
 	sleepTimeSecondError   = time.Duration(10)
-	sleepTimeSecondSuccess = time.Duration(2)
+	sleepTimeSecondSuccess = time.Duration(5)
 	limitReturnRecords     = 1000
 )
 
