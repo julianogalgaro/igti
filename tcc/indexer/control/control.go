@@ -6,26 +6,37 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"sort"
 	"time"
 
+	"github.com/julianogalgaro/indexer/mappings"
 	"github.com/julianogalgaro/indexer/storage"
 )
 
 type control struct {
 	storage          storage.Storage
 	elasticSearchUrl string
+	indexName        string
 	fieldsToIndexing []string
 }
 
-var sleepTimeSecondError = time.Duration(10)
-var sleepTimeSecondSuccess = time.Duration(2)
-var limitReturnRecords = 1000
+var (
+	sleepTimeSecondError   = time.Duration(10)
+	sleepTimeSecondSuccess = time.Duration(2)
+	limitReturnRecords     = 1000
+)
 
 func (self *control) StartIndexer() {
-	fmt.Printf("Starting indexing to [%s]...\n", self.elasticSearchUrl)
+	fmt.Printf("Create index [%s] on [%s]...\n", self.indexName, self.elasticSearchUrl)
+	err := self.createElasticIndex()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Index [%s] [OK]\n", self.indexName)
 
+	fmt.Printf("Starting indexing to [%s] on [%s]...\n", self.indexName, self.elasticSearchUrl)
 	for {
 		err := self.indexing()
 		if err != nil {
@@ -53,7 +64,7 @@ func (self *control) indexing() error {
 			return err
 		}
 
-		err = self.sendDataToElastic(tweetJson, "test6", "tweet", tweet["idstr"].(string))
+		err = self.sendDataToElastic(tweetJson, "tweet", tweet["idstr"].(string))
 		if err != nil {
 			return err
 		}
@@ -92,8 +103,8 @@ func unixNanoToStringDate(u interface{}, format string) string {
 	return ""
 }
 
-func (self *control) sendDataToElastic(data []byte, indexName, typeIndex, id string) error {
-	url := self.elasticSearchUrl + indexName + "/" + typeIndex + "/" + id
+func (self *control) sendDataToElastic(data []byte, typeIndex, id string) error {
+	url := self.elasticSearchUrl + self.indexName + "/" + typeIndex + "/" + id
 
 	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(data))
 	req.Header.Set("Content-Type", "application/json")
@@ -116,8 +127,39 @@ func (self *control) sendDataToElastic(data []byte, indexName, typeIndex, id str
 	}
 }
 
+func (self *control) createElasticIndex() error {
+	url := self.elasticSearchUrl + self.indexName
+	mapping, err := mappings.GetIndexMapping(self.indexName)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(mapping))
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	result := make(map[string]interface{}, 0)
+	json.Unmarshal(body, &result)
+
+	if (result["acknowledged"] != nil && result["acknowledged"].(bool) == true) ||
+		(result["error"] != nil && result["error"].(map[string]interface{})["type"].(string) == "index_already_exists_exception") {
+		return nil
+	} else {
+		return errors.New("Create index error response: " + string(body) + " json: " + string(mapping))
+	}
+}
+
 func NewControl() *control {
 	elasticUrl := "http://localhost:9200/"
+	indexName := "twitter"
+
 	s := storage.NewMongo()
 
 	fieldsToIndexing := []string{"idstr", "lang", "retweetcount", "retweeted", "createdat",
@@ -128,6 +170,7 @@ func NewControl() *control {
 	self := control{
 		storage:          s,
 		elasticSearchUrl: elasticUrl,
+		indexName:        indexName,
 		fieldsToIndexing: fieldsToIndexing,
 	}
 	return &self

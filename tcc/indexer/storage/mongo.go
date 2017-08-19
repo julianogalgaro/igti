@@ -73,8 +73,6 @@ func (self *Mongo) SetLastProcessingDate(id string, lastDate int64) {
 		fmt.Println("ERROR on update lastProcessingDate to ", id)
 		return
 	}
-
-	//fmt.Printf("[%s] lastProcessingDate updated to [%d]\n", id, lastDate)
 }
 
 func (self *Mongo) GetLastProcessingDate(id string) (int64, error) {
