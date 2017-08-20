@@ -43,11 +43,13 @@ services:
     domainname: elk-local
     image: julianogalgaro/tweet:latest
     network_mode: "host"
+    volumes:
+      - /etc/ssl/certs:/etc/ssl/certs
     environment:
-      - TWITTER_CONSUMER_API_KEY=""
-      - TWITTER_CONSUMER_API_SECRET=""
-      - TWITTER_ACCESS_TOKEN=""
-      - TWITTER_ACCESS_TOKEN_SECRET=""
+      - "TWITTER_CONSUMER_API_KEY="
+      - "TWITTER_CONSUMER_API_SECRET="
+      - "TWITTER_ACCESS_TOKEN="
+      - "TWITTER_ACCESS_TOKEN_SECRET="
 volumes:
   data:
     driver: local
