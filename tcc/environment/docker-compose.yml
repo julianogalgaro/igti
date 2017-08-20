@@ -28,6 +28,11 @@ services:
     network_mode: "host"
     environment:
       - ELASTICSEARCH_URL="http://localhost:9200"
+  indexer:
+    hostname: indexer
+    domainname: elk-local
+    image: julianogalgaro/indexer:latest
+    network_mode: "host"
 volumes:
   data:
     driver: local
