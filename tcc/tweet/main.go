@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -23,6 +24,12 @@ func main() {
 	fmt.Println("TWITTER_CONSUMER_API_SECRET", os.Getenv("TWITTER_CONSUMER_API_SECRET"))
 	fmt.Println("TWITTER_ACCESS_TOKEN", os.Getenv("TWITTER_ACCESS_TOKEN"))
 	fmt.Println("TWITTER_ACCESS_TOKEN_SECRET", os.Getenv("TWITTER_ACCESS_TOKEN_SECRET"))
+
+	err := testHttpConnection()
+	if err != nil {
+		log.Fatal("Connection problem!", err)
+		os.Exit(1)
+	}
 
 	config := oauth1.NewConfig(os.Getenv("TWITTER_CONSUMER_API_KEY"), os.Getenv("TWITTER_CONSUMER_API_SECRET"))
 	token := oauth1.NewToken(os.Getenv("TWITTER_ACCESS_TOKEN"), os.Getenv("TWITTER_ACCESS_TOKEN_SECRET"))
@@ -56,6 +63,24 @@ func main() {
 
 	stream.Stop()
 
+}
+
+func testHttpConnection() error {
+	fmt.Println("Testing https connection...")
+
+	req, _ := http.NewRequest("GET", "https://api.twitter.com", nil)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error on test request", err)
+		return err
+	}
+	defer resp.Body.Close()
+
+	fmt.Println("Connection [OK]")
+
+	return nil
 }
 
 func save(message interface{}, s storage.Storage) {
