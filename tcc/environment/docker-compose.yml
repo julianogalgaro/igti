@@ -33,6 +33,11 @@ services:
     domainname: elk-local
     image: julianogalgaro/indexer:latest
     network_mode: "host"
+  classificator:
+    hostname: classificator
+    domainname: elk-local
+    image: julianogalgaro/classificator:latest
+    network_mode: "host"
 volumes:
   data:
     driver: local
