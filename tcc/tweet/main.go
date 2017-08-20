@@ -17,6 +17,13 @@ var m storage.Storage
 
 func main() {
 
+	fmt.Println("Starting tweet with config:")
+
+	fmt.Println("TWITTER_CONSUMER_API_KEY", os.Getenv("TWITTER_CONSUMER_API_KEY"))
+	fmt.Println("TWITTER_CONSUMER_API_SECRET", os.Getenv("TWITTER_CONSUMER_API_SECRET"))
+	fmt.Println("TWITTER_ACCESS_TOKEN", os.Getenv("TWITTER_ACCESS_TOKEN"))
+	fmt.Println("TWITTER_ACCESS_TOKEN_SECRET", os.Getenv("TWITTER_ACCESS_TOKEN_SECRET"))
+
 	config := oauth1.NewConfig(os.Getenv("TWITTER_CONSUMER_API_KEY"), os.Getenv("TWITTER_CONSUMER_API_SECRET"))
 	token := oauth1.NewToken(os.Getenv("TWITTER_ACCESS_TOKEN"), os.Getenv("TWITTER_ACCESS_TOKEN_SECRET"))
 	// http.Client will automatically authorize Requests
@@ -52,6 +59,7 @@ func main() {
 }
 
 func save(message interface{}, s storage.Storage) {
+	fmt.Println(time.Now(), "Tweet received!")
 	s.InsertTweet(message)
 	fmt.Println(time.Now(), "Tweet inserted!")
 }
