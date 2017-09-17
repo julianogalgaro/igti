@@ -1,5 +1,14 @@
 version: '2'
 services:
+  mongodb:
+    hostname: mongodb
+    domainname: elk-local
+    image: mongo
+    ports:
+      - 27017:27017
+    network_mode: "host"
+    volumes:
+      - /data/:/data/
   elasticsearch:
     hostname: elasticsearch
     domainname: elk-local
@@ -18,7 +27,7 @@ services:
     mem_limit: 1g
     volumes:
       - $PWD/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - /data/elasticsearch:/data
+      - /data/elasticsearch:/usr/share/elasticsearch/data
   kibana:
     hostname: kibana
     domainname: elk-local
