@@ -8,7 +8,7 @@ services:
       - 27017:27017
     network_mode: "host"
     volumes:
-      - /data/:/data/
+      - /data:/data
   elasticsearch:
     hostname: elasticsearch
     domainname: elk-local
@@ -27,7 +27,7 @@ services:
     mem_limit: 1g
     volumes:
       - $PWD/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - /data/elasticsearch:/usr/share/elasticsearch/data
+      - esdata:/usr/share/elasticsearch/data
   kibana:
     hostname: kibana
     domainname: elk-local
@@ -61,5 +61,7 @@ services:
       - "TWITTER_ACCESS_TOKEN_SECRET="
 volumes:
   data:
+    driver: local
+  esdata:
     driver: local
 
